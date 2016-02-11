@@ -6,7 +6,7 @@
 
 var canvas;
 var ctx;
-var foods = [];
+var foods = []; //array that has all the foods
 
 
 window.onload =function()
@@ -14,8 +14,8 @@ window.onload =function()
     canvas = document.getElementById("viewport");
     ctx =canvas.getContext("2d");
     foods = createGame();
-   // window.setInterval(reDraw, 1000/60);
-    //window,setTimeout(cr)
+    //window.setInterval(reDraw, 1000/60);
+    window.setInterval();
 
 };
 
@@ -31,7 +31,7 @@ function creatBug()
 {
 
 }
-var Food  = function(x, y, eaten) {
+var Food  = function(x, y, eaten) {  //food object has x and y coordinates and if it is eaten or not
     this.x =x;
     this.y= y;
     this.eaten= eaten;
@@ -56,14 +56,14 @@ function createGame()
 
 
 
-    Food.prototype.drawFood = function(ctx){
+    Food.prototype.drawFood = function(ctx){    // checks if the food is eaten or not and draws an image
         var img = document.getElementById("food");
         if (!this.eaten) {
             ctx.drawImage(img, this.x, this.y, 10, 10);
         }
     };
 
-    function getFoodCoord()
+    function getFoodCoord()  // generates random x and y coordinates
     {
         var miny =  .20* canvas.height;  // not in top  20%
         var maxy = canvas.height- 10 ;
