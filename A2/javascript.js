@@ -7,6 +7,12 @@
 var canvas;
 var ctx;
 var foods = []; //array that has all the foods
+var bugs = [];
+var interval_game;
+var game_pause = false;
+var frameRate= 1000/60;
+var overlapDist = 10;
+var interval_bugs;
 
 
 window.onload =function()
@@ -14,98 +20,109 @@ window.onload =function()
     canvas = document.getElementById("viewport");
     ctx =canvas.getContext("2d");
     foods = createGame();
-    // window.setInterval(reDraw, 1000/60);
-    //window.setInterval(createBug, 3000);
+    interval_game =  window.setInterval(reDraw, frameRate);
+    document.getElementById("pauseBtn").addEventListener("click", pause);
+    interval_bugs = window.setInterval(createBug, 3000);
 
 };
+    function pause()
+    {
+
+        if(!game_pause)
+        {
+            console.log("pause");
+            window.clearInterval(interval_game);
+            game_pause = true;
+        }
+        else if (game_pause)
+        {
+            console.log("not pause");
+            interval_game = window.setInterval(reDraw, frameRate);
+            game_pause = false;
+        }
+    }
+
 
 function reDraw()
 {
     console.log("doinf shit");
-    for(var i = 0; i < foods.length; i++)
-    {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); //  clear canvas and redraw everything again
+    if(foods.length >0) {
+        for (var i = 0; i < foods.length; i++) {
             foods[i].drawFood(ctx);
+            // console.log(foods[i].x);
+        }
+        moveBugs();
+    }
+    else
+    {
+        alert("You lost");
+        console.log("you lost");
+        window.clearInterval(interval_bugs);
+        window.clearInterval(interval_game);
+
     }
 }
 
+function moveBugs()
+{
+    if(bugs.length> 0) {
+       // console.log(bugs.length);
+        for (var i = 0; i < bugs.length; i++) {
+           // console.log(bugs[i].y);
+            if (foods.length > 0) {
+                var closesFood = findClosestFood(bugs[i].x, bugs[i].y);
+                var VelocityX = closesFood[0] - bugs[i].x;
+                var VelocityY = closesFood[1] - bugs[i].y;
 
-function makeBug(x, y, color) {
+                var total = VelocityX + VelocityY;
 
-    color = color;
-    alpha = ".5";
+                speedX = VelocityX / total;
+                speedY = VelocityY / total;
 
-    //http://www.w3schools.com/tags/canvas_globalalpha.asp
-    context.globalAlpha = alpha;
-
-    /*-- Whiskers, legs and arms--*/
-    context.beginPath();
-    context.moveTo(x, y);
-    context.lineTo(x + 5, y - 15);
-    context.lineTo(x + 10, y);
-    context.moveTo(x + 5, y - 20);
-    context.lineTo(x + 4, y - 22);
-    context.lineTo(x + 6, y - 22);
-    context.lineTo(x + 5, y - 20);
-    context.moveTo(x, y - 20);
-    context.lineTo(x + 10, y - 40);
-    context.moveTo(x + 10, y - 20);
-    context.lineTo(x, y - 40);
-    context.lineWidth = 2;
-    context.strokeStyle = color;
-
-    /*-- Triangles on the tips --*/
-    context.moveTo(x, y);
-    context.lineTo(x, y - 3);
-    context.lineTo(x + 1.73, y - 2.4);
-    context.lineTo(x, y);
-    context.moveTo(x + 10, y);
-    context.lineTo(x + 8.27, y - 2.4);
-    context.lineTo(x + 10, y - 3);
-    context.lineTo(x + 10, y);
-    context.moveTo(x, y - 20);
-    context.lineTo(x, y - 22);
-    context.lineTo(x + 1.6, y - 21.25);
-    context.lineTo(x, y - 22);
-    context.moveTo(x + 10, y - 20);
-    context.lineTo(x + 8.4, y - 21.25);
-    context.lineTo(x + 10, y - 22);
-    context.lineTo(x + 10, y - 20);
-    context.moveTo(x, y - 40);
-    context.lineTo(x, y - 38);
-    context.lineTo(x + 1.6, y - 38.25);
-    context.lineTo(x, y - 38);
-    context.moveTo(x + 10, y - 40);
-    context.lineTo(x + 8.4, y - 38.25);
-    context.lineTo(x + 10, y - 38);
-    context.lineTo(x + 10, y - 40);
-    context.stroke();
-
-    /*-- Body parts --*/
-    context.beginPath();
-    context.arc(x + 5, y - 15, 5, 0, 2 * Math.PI);
-    context.moveTo(x + 5, y - 21);
-    context.bezierCurveTo(x, y - 20, x, y - 30, x + 5, y - 38.75);
-    context.moveTo(x + 5, y - 21);
-    context.bezierCurveTo(x + 10, y - 20, x + 10, y - 30, x + 5, y - 38.75);
-    context.fillStyle = color;
-    context.lineWidth = 1;
-    context.strokeStyle = "#000000"
-    context.stroke();
-    context.fill();
-
-    /*-- Eyes and Mouth --*/
-    context.beginPath();
-    context.arc(x + 3.3, y - 13.2, 1, 0, 2 * Math.PI);
-    context.arc(x + 6.75, y - 13.2, 1, 0, 2 * Math.PI);
-    context.fillStyle = "white";
-    context.fill();
-    context.beginPath();
-    context.arc(x + 5, y - 15, 2.5, 0, Math.PI, false);
-    context.stroke();
+                bugs[i].x += speedX;
+                bugs[i].y += speedY;
+                //console.log(bugs[i].y);
+                bugs[i].drawBug(ctx);
+            }
+        }
+    }
 }
+function findClosestFood(x1, y1)
+{
+    var min= Number.MAX_VALUE;
+    var coord =[];
+    for (var i = 0; i< foods.length; i++)
+    {
+        x2 = foods[i].x;
+        y2 = foods[i].y;
+
+        var dist = Math.sqrt(Math.pow((x2-x1),2)+ Math.pow((y2-y1),2));
+        if(dist < overlapDist)
+        {
+            foods.splice(i, 1);
+            console.log(foods.length);
+            return findClosestFood(x1, x2);
+        }
+
+        if (dist < min)
+        {
+            min = dist;
+            coord = [x2,y2];
+        }
+
+    }
+    return coord;
+}
+
 function createBug()
 {
-    console.log("hey bug");
+    console.log("hey");
+    var x=Math.floor( (Math.random() * (canvas.width-20)+10)); //x at random
+   // var y = 20;  //start at 20px
+    var bug = new Bug(x, 20, "black");
+    bugs.push(bug);
+    bug.drawBug();
 
 }
 
@@ -114,6 +131,13 @@ var Food  = function(x, y, eaten) {  //food object has x and y coordinates and i
     this.x =x;
     this.y= y;
     this.eaten= eaten;
+
+};
+
+var Bug  = function(x, y, color) {  //Bug object has x and y coordinates and color
+    this.x =x;
+    this.y =y;
+    this.color= color;
 
 };
 
@@ -126,94 +150,110 @@ function createGame()
         console.log(crd);
         var food1 = new Food(crd[0], crd[1], false);
         allFood.push(food1);
+        //ctx.globalAlpha =1;
         food1.drawFood(ctx);
     }
     return allFood;
 }
 
 
+Bug.prototype.drawBug = function(ctx){
+    makeBug(this.x, this.y, this.color);
+};
 
 
-
-    Food.prototype.drawFood = function(ctx){    // checks if the food is eaten or not and draws an image
-        var img = document.getElementById("food");
-        if (!this.eaten) {
-            ctx.drawImage(img, this.x, this.y, 10, 10);
-        }
-    };
-
-    function getFoodCoord()  // generates random x and y coordinates
-    {
-        var miny =  .20* canvas.height;  // not in top  20%
-        var maxy = canvas.height- 10 ;
-        var y= Math.floor(Math.random() * (maxy - miny) + miny);
-        var x=Math.floor( (Math.random() * (canvas.width-20)+10));
-        return [x, y];
+Food.prototype.drawFood = function(ctx){    // checks if the food is eaten or not and draws an image
+    var img = document.getElementById("food");
+    if (!this.eaten) {
+        ctx.drawImage(img, this.x, this.y, 18, 18);
     }
+};
+
+function getFoodCoord()  // generates random x and y coordinates
+{
+    var miny =  .20* canvas.height;  // not in top  20%
+    var maxy = canvas.height- 10 ;
+    var y= Math.floor(Math.random() * (maxy - miny) + miny);
+    var x=Math.floor( (Math.random() * (canvas.width-20)+10));
+    return [x, y];
+}
 
 
 
-//window.onload =function(){
-//    var canvas = document.getElementById("myCanvas");
-//    var ctx = canvas.getContext("2d");
-//    ctx.fillStyle = "black";
-//    ctx.fill();
-//    var radius = canvas.height / 2;
-//    ctx.translate(radius, radius);
-//    radius = radius * 0.90;
-//
-//    drawClock(radius,ctx);
-//
-//
-//
-//};
-//
-//function drawClock(radius, ctx) {
-//    ctx.arc(0, 0, radius, 0 , 2*Math.PI);
-//    ctx.fillStyle = "white";
-//    ctx.fill();
-//    drawFace(radius, ctx);
-//}
-//
-//function drawFace(radius, ctx)
-//{
-//    var grad;
-//    ctx.beginPath();
-//    ctx.arc(0, 0, radius, 0, 2*Math.PI);
-//    ctx.fillStyle = 'white';
-//    ctx.fill();
-//
-//    grad = ctx.createRadialGradient(0,0,radius*0.95, 0,0,radius*1.05);
-//    grad.addColorStop(0, '#333');
-//    grad.addColorStop(0.5, 'white');
-//    grad.addColorStop(1, '#333');
-//    ctx.strokeStyle = grad;
-//    ctx.lineWidth = radius*0.1;
-//    ctx.stroke();
-//
-//    ctx.beginPath();
-//    ctx.arc(0, 0, radius*0.1, 0, 2*Math.PI);
-//    ctx.fillStyle = '#333';
-//    ctx.fill();
-//    drawNumbers(ctx, radius);
-//}
-//
-//function drawNumbers(ctx, radius) {
-//    var ang;
-//    var num;
-//    ctx.font = radius * 0.15 + "px arial";
-//    ctx.textBaseline = "middle";
-//    ctx.textAlign = "center";
-//    for (num = 1; num < 13; num++) {
-//        ang = num * Math.PI / 6;
-//        ctx.rotate(ang);
-//        ctx.translate(0, -radius * 0.85);
-//        ctx.rotate(-ang);
-//        ctx.fillText(num.toString(), 0, 0);
-//        ctx.rotate(ang);
-//        ctx.translate(0, radius * 0.85);
-//        ctx.rotate(-ang);
-//    }
-//}
-//
-//
+
+
+function makeBug(x, y, color) {
+
+    color = color;
+    alpha = ".5";
+
+    //http://www.w3schools.com/tags/canvas_globalalpha.asp
+    ctx.globalAlpha = alpha;
+
+    /*-- Whiskers, legs and arms--*/
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + 5, y - 15);
+    ctx.lineTo(x + 10, y);
+    ctx.moveTo(x + 5, y - 20);
+    ctx.lineTo(x + 4, y - 22);
+    ctx.lineTo(x + 6, y - 22);
+    ctx.lineTo(x + 5, y - 20);
+    ctx.moveTo(x, y - 20);
+    ctx.lineTo(x + 10, y - 40);
+    ctx.moveTo(x + 10, y - 20);
+    ctx.lineTo(x, y - 40);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = color;
+
+    /*-- Triangles on the tips --*/
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y - 3);
+    ctx.lineTo(x + 1.73, y - 2.4);
+    ctx.lineTo(x, y);
+    ctx.moveTo(x + 10, y);
+    ctx.lineTo(x + 8.27, y - 2.4);
+    ctx.lineTo(x + 10, y - 3);
+    ctx.lineTo(x + 10, y);
+    ctx.moveTo(x, y - 20);
+    ctx.lineTo(x, y - 22);
+    ctx.lineTo(x + 1.6, y - 21.25);
+    ctx.lineTo(x, y - 22);
+    ctx.moveTo(x + 10, y - 20);
+    ctx.lineTo(x + 8.4, y - 21.25);
+    ctx.lineTo(x + 10, y - 22);
+    ctx.lineTo(x + 10, y - 20);
+    ctx.moveTo(x, y - 40);
+    ctx.lineTo(x, y - 38);
+    ctx.lineTo(x + 1.6, y - 38.25);
+    ctx.lineTo(x, y - 38);
+    ctx.moveTo(x + 10, y - 40);
+    ctx.lineTo(x + 8.4, y - 38.25);
+    ctx.lineTo(x + 10, y - 38);
+    ctx.lineTo(x + 10, y - 40);
+    ctx.stroke();
+
+    /*-- Body parts --*/
+    ctx.beginPath();
+    ctx.arc(x + 5, y - 15, 5, 0, 2 * Math.PI);
+    ctx.moveTo(x + 5, y - 21);
+    ctx.bezierCurveTo(x, y - 20, x, y - 30, x + 5, y - 38.75);
+    ctx.moveTo(x + 5, y - 21);
+    ctx.bezierCurveTo(x + 10, y - 20, x + 10, y - 30, x + 5, y - 38.75);
+    ctx.fillStyle = color;
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "#000000"
+    ctx.stroke();
+    ctx.fill();
+
+    /*-- Eyes and Mouth --*/
+    ctx.beginPath();
+    ctx.arc(x + 3.3, y - 13.2, 1, 0, 2 * Math.PI);
+    ctx.arc(x + 6.75, y - 13.2, 1, 0, 2 * Math.PI);
+    ctx.fillStyle = "white";
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x + 5, y - 15, 2.5, 0, Math.PI, false);
+    ctx.stroke();
+}
+
