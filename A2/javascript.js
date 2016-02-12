@@ -17,25 +17,56 @@ var overlapDist = 5;
 var interval_bugs;
 var fadeList = [];
 var score = 0;
+var highScore = 0;
 var timer =60;
 var timeCntr =0;
 
+var game;
+var startMenu;
+
+//var game = document.getElementById("game");
+//var startMenu = document.getElementById("startMenu");
 
 window.onload =function()
 {
+    
+    game = document.getElementById("game");
+    startMenu = document.getElementById("startMenu");
+    
+    startMenu.style.display = "block";
+    game.style.display = "none";
+    
+    document.getElementById("highScore").innerHTML = "High Score: <br>" + highScore;
+    document.getElementById("startButton").onclick = startGame;
+    
+    
     canvas = document.getElementById("viewport");
     ctx =canvas.getContext("2d");
     infoBar = document.getElementById("infoBar");
     ctxInfoBar = infoBar.getContext("2d");
     drawInfoBar();
+    document.getElementById("viewport").onclick = killBug;
+    document.getElementById("infoBar").onclick = checkPause; // check pause on canvas and execute
+    
+    
+};
+
+function startGame(){
+    console.log("game started!");
+    game.style.display = "block";
+    startMenu.style.display = "none";
+    
     foods = createGame();
     interval_game =  window.setInterval(reDraw, frameRate);
     interval_bugs = window.setInterval(createBug, (Math.random() * 2 + 1)*1000); //new bugs created at randome times
-    document.getElementById("viewport").onclick = killBug;
-    document.getElementById("infoBar").onclick = checkPause; // check pause on canvas and execute
+}
 
-
-};
+function showMenu(){
+    game.style.display = "none";
+    startMenu.style.display = "block";
+    console.log(highScore);
+    document.getElementById("highScore").innerHTML = "High Score: <br>" + highScore;
+}
 
 function checkPause(event)
 {
@@ -46,29 +77,29 @@ function checkPause(event)
         pause();
     }
 }
-    function pause()
+function pause()
+{
+    
+    if(!game_pause)
     {
-
-        if(!game_pause)
-        {
-            game_pause = true;
-            console.log("pause");
-            window.clearInterval(interval_game);
-            window.clearInterval(interval_bugs);
-
-        }
-        else if (game_pause)
-        {
-            game_pause = false;
-            console.log("not pause");
-            interval_game = window.setInterval(reDraw, frameRate);
-            interval_bugs = window.setInterval(createBug, (Math.random() * 2 + 1)*1000);
-
-        }
-        ctxInfoBar.clearRect(0, 0, infoBar.width, infoBar.height);  // clear info bar and redraw
-        drawInfoBar(); // toogle pause/paly UI
-
+        game_pause = true;
+        console.log("pause");
+        window.clearInterval(interval_game);
+        window.clearInterval(interval_bugs);
+        
     }
+    else if (game_pause)
+    {
+        game_pause = false;
+        console.log("not pause");
+        interval_game = window.setInterval(reDraw, frameRate);
+        interval_bugs = window.setInterval(createBug, (Math.random() * 2 + 1)*1000);
+        
+    }
+    ctxInfoBar.clearRect(0, 0, infoBar.width, infoBar.height);  // clear info bar and redraw
+    drawInfoBar(); // toogle pause/paly UI
+    
+}
 
 function drawInfoBar()    // to draw in the info bar canvas
 {
@@ -93,7 +124,7 @@ function drawInfoBar()    // to draw in the info bar canvas
 
 function reDraw()
 {
-   // console.log("doinf shit");
+    // console.log("doinf shit");
     timeCntr++;
     ctxInfoBar.clearRect(0, 0, infoBar.width, infoBar.height);  // clear info bar and redraw
     drawInfoBar();
@@ -134,6 +165,7 @@ function reDraw()
         console.log("you lost");
         window.clearInterval(interval_bugs);
         window.clearInterval(interval_game);
+        showMenu();
 
     }
     if(timer == 0)
@@ -151,7 +183,7 @@ function moveBugs()
 {
     if(bugs.length> 0) {
         for (var i = 0; i < bugs.length; i++) {
-           // console.log(bugs[i].y);
+            // console.log(bugs[i].y);
             if (foods.length > 0) {
                 var closesFood = findClosestFood(bugs[i].x, bugs[i].y);
                 var dx = closesFood[0]- bugs[i].x  ;
@@ -195,7 +227,7 @@ function checkBugsAround(currentBug)  // returns -1 so the bug can move as usual
                     {
                         if(currentBug.x < bugs[i].x) //current bug is the left one
                         {
-                           // bugs[i].y -= 2;
+                            // bugs[i].y -= 2;
                             return -1;
                         }
                         else
@@ -245,8 +277,8 @@ function checkBugsAround(currentBug)  // returns -1 so the bug can move as usual
                         }
                     }
                 }
-
-
+                
+                
             }
         }
     }
@@ -260,7 +292,7 @@ function findClosestFood(x1, y1)
     {
         x2 = foods[i].x;
         y2 = foods[i].y;
-
+        
         var dist = Math.sqrt(Math.pow((x2-x1),2)+ Math.pow((y2-y1),2));
         if(dist < overlapDist)
         {
@@ -268,13 +300,13 @@ function findClosestFood(x1, y1)
             //console.log(foods.length);
             return findClosestFood(x1, x2);
         }
-
+        
         if (dist < min)
         {
             min = dist;
             coord = [x2,y2];
         }
-
+        
     }
     return coord;
 }
@@ -283,7 +315,7 @@ function createBug()
 {
     console.log("hey");
     var x=Math.floor( (Math.random() * (390-10)+10)); //x at random between 10 and 390
-   // var y = 20;  //start at 20px
+    // var y = 20;  //start at 20px
     //getting random colors
     var color;
     var velocity;
@@ -306,7 +338,7 @@ function createBug()
     var bug = new Bug(x, 20, color, velocity, .7);
     bugs.push(bug);
     bug.drawBug();
-
+    
 }
 
 
@@ -314,7 +346,7 @@ var Food  = function(x, y, eaten) {  //food object has x and y coordinates and i
     this.x =x;
     this.y= y;
     this.eaten= eaten;
-
+    
 };
 
 var Bug  = function(x, y, color, velocity, alpha) {  //Bug object has x and y coordinates and color
@@ -323,7 +355,7 @@ var Bug  = function(x, y, color, velocity, alpha) {  //Bug object has x and y co
     this.color= color;
     this.velocity = velocity;
     this.alpha = alpha;
-
+    
 };
 
 function createGame()
@@ -332,7 +364,7 @@ function createGame()
     for(var i = 0; i < 5; i++)
     {
         var crd = getFoodCoord();
-       // console.log(crd);
+        // console.log(crd);
         var food1 = new Food(crd[0], crd[1], false);
         allFood.push(food1);
         ctx.globalAlpha =1;
@@ -391,9 +423,15 @@ function killBug(event)
                     score += 1;
                 }
                 console.log(score);
+                
+                if(score > highScore){
+                    highScore = score;
+                    console.log(highScore);
+
+                }
                 fadeList.push(bugs[i]);
                 bugs.splice(i, 1);
-
+                
             }
         }
     }
@@ -405,13 +443,13 @@ function killBug(event)
 
 
 function makeBug(x, y, color, alpha) {
-
+    
     color = color;
     //alpha = ".5";
-
+    
     //http://www.w3schools.com/tags/canvas_globalalpha.asp
     ctx.globalAlpha = alpha;
-
+    
     /*-- Whiskers, legs and arms--*/
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -427,7 +465,7 @@ function makeBug(x, y, color, alpha) {
     ctx.lineTo(x, y - 40);
     ctx.lineWidth = 2;
     ctx.strokeStyle = color;
-
+    
     /*-- Triangles on the tips --*/
     ctx.moveTo(x, y);
     ctx.lineTo(x, y - 3);
@@ -454,7 +492,7 @@ function makeBug(x, y, color, alpha) {
     ctx.lineTo(x + 10, y - 38);
     ctx.lineTo(x + 10, y - 40);
     ctx.stroke();
-
+    
     /*-- Body parts --*/
     ctx.beginPath();
     ctx.arc(x + 5, y - 15, 5, 0, 2 * Math.PI);
@@ -467,7 +505,7 @@ function makeBug(x, y, color, alpha) {
     ctx.strokeStyle = "#000000"
     ctx.stroke();
     ctx.fill();
-
+    
     /*-- Eyes and Mouth --*/
     ctx.beginPath();
     ctx.arc(x + 3.3, y - 13.2, 1, 0, 2 * Math.PI);

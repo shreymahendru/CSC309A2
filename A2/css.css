@@ -25,12 +25,57 @@ p
     background-color: #63a0bd;
     float: left;
 }
-img 
+img
 {
     display: none;
 }
 
-/*#game*/
-/*{*/
-    /*display: none;*/
-/*}*/
+#startMenu {
+    width: 400px;
+    height: 600px;
+    margin: 0 auto;
+
+}
+
+#game
+{
+margin: 0 auto;
+width: 400px;
+height: 650px;
+pointer-events: visible;
+}
+
+.row {
+    margin: 0 auto;
+    position: relative;
+    margin-bottom: 30px;
+    width: 50%;
+    height: 90px;
+    text-align: center;
+    font-family: "Comic Sans MS";
+}
+
+#spacer {
+    opacity: 0;
+}
+
+#startButton {
+    width: 70%;
+    height: 60%;
+    background-color: purple;
+    margin: 0 auto;
+    position: relative;
+    top: 20%;
+}
+
+.row p {
+    position: relative;
+    top: 10%;
+    color: yellow;
+}
+
+
+
+
+
+
