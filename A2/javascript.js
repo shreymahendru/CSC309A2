@@ -15,6 +15,8 @@ var overlapDist = 5;
 var interval_bugs;
 var fadeList = [];
 var score = 0;
+var timer =60;
+var timeCntr =0;
 
 
 window.onload =function()
@@ -22,6 +24,7 @@ window.onload =function()
     canvas = document.getElementById("viewport");
     ctx =canvas.getContext("2d");
     foods = createGame();
+    document.getElementById("time").innerHTML = timer;
     interval_game =  window.setInterval(reDraw, frameRate);
     document.getElementById("pauseBtn").addEventListener("click", pause);
     interval_bugs = window.setInterval(createBug, (Math.random() * 2 + 1)*1000); //new bugs created at randome times
@@ -52,6 +55,13 @@ window.onload =function()
 function reDraw()
 {
    // console.log("doinf shit");
+    timeCntr++;
+    if(timeCntr ==60)
+    {
+        timer--;
+        document.getElementById("time").innerHTML = timer;
+        timeCntr = 0;
+    }
     ctx.clearRect(0, 0, canvas.width, canvas.height); //  clear canvas and redraw everything again
     if(foods.length >0) {
         // draw fade list
@@ -85,6 +95,13 @@ function reDraw()
         window.clearInterval(interval_bugs);
         window.clearInterval(interval_game);
 
+    }
+    if(timer == 0)
+    {
+        window.clearInterval(interval_game);
+        window.clearInterval(interval_bugs);
+        alert("You win!");
+        timer = 0;
     }
 }
 
