@@ -29,14 +29,23 @@ window.onload =function()
     ctxInfoBar = infoBar.getContext("2d");
     drawInfoBar();
     foods = createGame();
-    document.getElementById("time").innerHTML = timer;
     interval_game =  window.setInterval(reDraw, frameRate);
-    document.getElementById("pauseBtn").addEventListener("click", pause);
     interval_bugs = window.setInterval(createBug, (Math.random() * 2 + 1)*1000); //new bugs created at randome times
     document.getElementById("viewport").onclick = killBug;
+    document.getElementById("infoBar").onclick = checkPause; // check pause on canvas and execute
 
 
 };
+
+function checkPause(event)
+{
+    var x= event.pageX - infoBar.offsetLeft;
+    var y= event.pageY - infoBar.offsetTop;
+    if (x >=187 && x<=247 && y>= 10 && y<= 40)
+    {
+        pause();
+    }
+}
     function pause()
     {
 
@@ -80,7 +89,6 @@ function reDraw()
     if(timeCntr ==60)
     {
         timer--;
-        document.getElementById("time").innerHTML = timer;
         timeCntr = 0;
     }
     ctx.clearRect(0, 0, canvas.width, canvas.height); //  clear canvas and redraw everything again
@@ -233,7 +241,6 @@ function createGame()
         ctx.globalAlpha =1;
         food1.drawFood(ctx);
     }
-    document.getElementById("score").innerHTML = score;
     return allFood;
 }
 
@@ -287,7 +294,6 @@ function killBug(event)
                     score += 1;
                 }
                 console.log(score);
-                document.getElementById("score").innerHTML = score;
                 fadeList.push(bugs[i]);
                 bugs.splice(i, 1);
 
