@@ -11,7 +11,7 @@ var bugs = [];
 var interval_game;
 var game_pause = false;
 var frameRate= 1000/60;
-var overlapDist = 10;
+var overlapDist = 5;
 var interval_bugs;
 
 
@@ -72,16 +72,24 @@ function moveBugs()
            // console.log(bugs[i].y);
             if (foods.length > 0) {
                 var closesFood = findClosestFood(bugs[i].x, bugs[i].y);
-                var VelocityX = closesFood[0] - bugs[i].x;
-                var VelocityY = closesFood[1] - bugs[i].y;
-
-                var total = VelocityX + VelocityY;
-
-                speedX = VelocityX / total;
-                speedY = VelocityY / total;
-
-                bugs[i].x += speedX;
-                bugs[i].y += speedY;
+                //var VelocityX = closesFood[0] - bugs[i].x;
+                //var VelocityY = closesFood[1] - bugs[i].y;
+                //
+                //var total = VelocityX + VelocityY;
+                //
+                //speedX = VelocityX / total;
+                //speedY = VelocityY / total;
+                //
+                //bugs[i].x += speedX;
+                //bugs[i].y += speedY;
+                var dx = closesFood[0]- bugs[i].x  ;
+                var dy = closesFood[1] - bugs[i].y   ;
+                var angle = Math.atan2(dy, dx);
+                var velo = bugs[i].velocity;
+                var xVelocity = velo *Math.cos(angle);   // this shit works
+                var yVelocity = velo *Math.sin(angle);
+                bugs[i].y += yVelocity;
+                bugs[i].x += xVelocity
                 //console.log(bugs[i].y);
                 bugs[i].drawBug(ctx);
             }
@@ -120,7 +128,26 @@ function createBug()
     console.log("hey");
     var x=Math.floor( (Math.random() * (canvas.width-20)+10)); //x at random
    // var y = 20;  //start at 20px
-    var bug = new Bug(x, 20, "black");
+    //getting random colors
+    var color;
+    var velocity;
+    var probability = Math.random();
+    if (probability < .03)
+    {
+        color = "black";
+        velocity = 150/60;
+    }
+    else if (probability >= .03 && probability < .06)
+    {
+        color = "red";
+        velocity = 75/60;
+    }
+    else
+    {
+        color = "orange";
+        velocity = 60/60;
+    }
+    var bug = new Bug(x, 20, color, velocity);
     bugs.push(bug);
     bug.drawBug();
 
@@ -134,10 +161,11 @@ var Food  = function(x, y, eaten) {  //food object has x and y coordinates and i
 
 };
 
-var Bug  = function(x, y, color) {  //Bug object has x and y coordinates and color
+var Bug  = function(x, y, color, velocity) {  //Bug object has x and y coordinates and color
     this.x =x;
     this.y =y;
     this.color= color;
+    this.velocity = velocity;
 
 };
 
