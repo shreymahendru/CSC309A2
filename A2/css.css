@@ -3,12 +3,28 @@ p
     font-size: 2em;
 }
 
-canvas
+#viewport
 {
-    border:1px solid purple;
+    padding: 0;
+    margin: 0;
+    border:2px solid purple;
+    border-radius: 1%;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
     background-color: skyblue;
+    float: left;
 }
-
+#infoBar
+{
+    padding: 0;
+    margin: 0;
+    border:2px solid purple;
+    border-radius: 10%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: #63a0bd;
+    float: left;
+}
 img 
 {
     display: none;

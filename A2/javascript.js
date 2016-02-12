@@ -6,6 +6,8 @@
 
 var canvas;
 var ctx;
+var infoBar;
+var ctxInfoBar;
 var foods = []; //array that has all the foods
 var bugs = [];
 var interval_game;
@@ -23,6 +25,9 @@ window.onload =function()
 {
     canvas = document.getElementById("viewport");
     ctx =canvas.getContext("2d");
+    infoBar = document.getElementById("infoBar");
+    ctxInfoBar = infoBar.getContext("2d");
+    drawInfoBar();
     foods = createGame();
     document.getElementById("time").innerHTML = timer;
     interval_game =  window.setInterval(reDraw, frameRate);
@@ -51,11 +56,27 @@ window.onload =function()
         }
     }
 
+function drawInfoBar()    // to draw in the info bar canvas
+{
+    ctxInfoBar.font = "20px Comic Sans MS";
+    ctxInfoBar.fillStyle = "#F9D956";
+    ctxInfoBar.fillText("Time Left: "+ timer,6,30);
+    ctxInfoBar.fillText("Score: "+ score, 305, 30);
+    ctxInfoBar.fillStyle = "purple";
+    ctxInfoBar.fillRect(187, 10, 60, 30);
+    ctxInfoBar.fillStyle = "#F9D956";
+    ctxInfoBar.stroke();
+    ctxInfoBar.font = "15px Comic Sans MS";
+    ctxInfoBar.fillText("Pause", 197, 30);
+}
+
 
 function reDraw()
 {
    // console.log("doinf shit");
     timeCntr++;
+    ctxInfoBar.clearRect(0, 0, infoBar.width, infoBar.height);  // clear info bar and redraw
+    drawInfoBar();
     if(timeCntr ==60)
     {
         timer--;
