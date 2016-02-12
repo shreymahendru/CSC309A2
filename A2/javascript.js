@@ -51,18 +51,23 @@ function checkPause(event)
 
         if(!game_pause)
         {
+            game_pause = true;
             console.log("pause");
             window.clearInterval(interval_game);
             window.clearInterval(interval_bugs);
-            game_pause = true;
+
         }
         else if (game_pause)
         {
+            game_pause = false;
             console.log("not pause");
             interval_game = window.setInterval(reDraw, frameRate);
             interval_bugs = window.setInterval(createBug, (Math.random() * 2 + 1)*1000);
-            game_pause = false;
+
         }
+        ctxInfoBar.clearRect(0, 0, infoBar.width, infoBar.height);  // clear info bar and redraw
+        drawInfoBar(); // toogle pause/paly UI
+
     }
 
 function drawInfoBar()    // to draw in the info bar canvas
@@ -70,13 +75,19 @@ function drawInfoBar()    // to draw in the info bar canvas
     ctxInfoBar.font = "20px Comic Sans MS";
     ctxInfoBar.fillStyle = "#F9D956";
     ctxInfoBar.fillText("Time Left: "+ timer,6,30);
-    ctxInfoBar.fillText("Score: "+ score, 305, 30);
+    ctxInfoBar.fillText("Score: "+ score, 300, 30);
     ctxInfoBar.fillStyle = "purple";
     ctxInfoBar.fillRect(187, 10, 60, 30);
     ctxInfoBar.fillStyle = "#F9D956";
     ctxInfoBar.stroke();
     ctxInfoBar.font = "15px Comic Sans MS";
-    ctxInfoBar.fillText("Pause", 197, 30);
+    if(!game_pause) {
+        ctxInfoBar.fillText("Pause", 197, 30);
+    }
+    else
+    {
+        ctxInfoBar.fillText("Play", 202, 30);
+    }
 }
 
 
@@ -127,6 +138,8 @@ function reDraw()
     }
     if(timer == 0)
     {
+        ctxInfoBar.clearRect(0, 0, infoBar.width, infoBar.height);  // clear info bar and redraw
+        drawInfoBar();
         window.clearInterval(interval_game);
         window.clearInterval(interval_bugs);
         alert("You win!");
@@ -147,13 +160,97 @@ function moveBugs()
                 var velo = bugs[i].velocity;
                 var xVelocity = velo *Math.cos(angle);   // this shit works
                 var yVelocity = velo *Math.sin(angle);
-                bugs[i].y += yVelocity;
-                bugs[i].x += xVelocity
+                var change = checkBugsAround(bugs[i]);
+                if (change == -1) {
+                    bugs[i].y += yVelocity;
+                    bugs[i].x += xVelocity;
+                }
+                else if (change == -5)
+                {
+                    bugs[i].x -= 5;
+                }
+                else if (change == 5)
+                {
+                    bugs[i].x  += 5;
+                }
                 //console.log(bugs[i].y);  // HAVE TO FIND THE NEAREST BUG AND MOVE LIKEWISE
                 bugs[i].drawBug(ctx);
             }
         }
     }
+}
+
+function checkBugsAround(currentBug)  // returns -1 so the bug can move as usual and move the bug 5px away from the faster bug
+// and other cases to avoid collision
+{
+    if (bugs.length > 1) {
+        for (var i = 0; i < bugs.length; i++) {
+            if(bugs[i] != currentBug)
+            {
+                var dist = Math.sqrt(Math.pow((bugs[i].x-currentBug.x),2)+ Math.pow((bugs[i].y-currentBug.y),2));
+                if (dist <40)
+                {
+                    //same speed  right bug passes
+                    if(bugs[i].color == currentBug.color)
+                    {
+                        if(currentBug.x < bugs[i].x) //current bug is the left one
+                        {
+                           // bugs[i].y -= 2;
+                            return -1;
+                        }
+                        else
+                        {
+                            return -100;
+                        }
+                    }
+                    if(currentBug.color == "orange") //slowest bug has to wait and move to the left/right
+                    {
+                        if(currentBug.x < bugs[i].x)
+                        {
+                            currentBug.x -= 5;
+                            return -5;
+                        }
+                        else
+                        {
+                            currentBug.x += 5;
+                            return 5;
+                        }
+                    }
+                    if (currentBug.color == "red" && bugs[i].color == "black") //medium speed only wait and move for black
+                    {
+                        if(currentBug.x < bugs[i].x)
+                        {
+                            currentBug.x -= 5;
+                            return -5;
+                        }
+                        else
+                        {
+                            currentBug.x += 5;
+                            return 5;
+                        }
+                    }
+                    if(currentBug.color == "black")
+                    {
+                        if(currentBug.x < bugs[i].x)
+                        {
+                            bugs[i].x += 5;
+                            bugs[i].y -=2;
+                            return -1;
+                        }
+                        else
+                        {
+                            bugs.x -= 5;
+                            bugs[i].y -=2;
+                            return -1;
+                        }
+                    }
+                }
+
+
+            }
+        }
+    }
+    return -1;
 }
 function findClosestFood(x1, y1)
 {
