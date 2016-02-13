@@ -18,55 +18,58 @@ var interval_bugs;
 var fadeList = [];
 var score = 0;
 var highScore = 0;
-var timer =60;
+var timer = 60;
 var timeCntr =0;
+var level;
 
-var game;
-var startMenu;
-
-//var game = document.getElementById("game");
-//var startMenu = document.getElementById("startMenu");
 
 window.onload =function()
 {
-    
-    game = document.getElementById("game");
-    startMenu = document.getElementById("startMenu");
-    
-    startMenu.style.display = "block";
-    game.style.display = "none";
-    
+    document.getElementById("startMenu").style.display = "block";
+    document.getElementById("game").style.display = "none";
     document.getElementById("highScore").innerHTML = "High Score: <br>" + highScore;
     document.getElementById("startButton").onclick = startGame;
-    
     
     canvas = document.getElementById("viewport");
     ctx =canvas.getContext("2d");
     infoBar = document.getElementById("infoBar");
     ctxInfoBar = infoBar.getContext("2d");
-    drawInfoBar();
     document.getElementById("viewport").onclick = killBug;
     document.getElementById("infoBar").onclick = checkPause; // check pause on canvas and execute
-    
-    
 };
 
 function startGame(){
     console.log("game started!");
-    game.style.display = "block";
-    startMenu.style.display = "none";
+    document.getElementById("game").style.display = "block";
+    document.getElementById("startMenu").style.display = "none";
     
+    bugs = [];
+    foods = [];
+    timer = 60;
+    
+// Level assignment
+    if (document.getElementById("radio1").checked) {
+        level = "1";
+    }
+    else {
+        level = "2";
+    }
+
+    console.log("Level "+level);
+
+    drawInfoBar();
     foods = createGame();
     interval_game =  window.setInterval(reDraw, frameRate);
     interval_bugs = window.setInterval(createBug, (Math.random() * 2 + 1)*1000); //new bugs created at randome times
 }
 
 function showMenu(){
-    game.style.display = "none";
-    startMenu.style.display = "block";
+    document.getElementById("game").style.display = "none";
+    document.getElementById("startMenu").style.display = "block";
     console.log(highScore);
     document.getElementById("highScore").innerHTML = "High Score: <br>" + highScore;
 }
+
 
 function checkPause(event)
 {
@@ -77,6 +80,8 @@ function checkPause(event)
         pause();
     }
 }
+
+
 function pause()
 {
     
