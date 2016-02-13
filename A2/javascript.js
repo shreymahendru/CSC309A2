@@ -17,18 +17,21 @@ var overlapDist = 5;
 var interval_bugs;
 var fadeList = [];
 var score = 0;
-var highScore = 0;
+var highScores = [0,0];
 var timer = 60;
 var timeCntr =0;
-var level;
+var level = 1;
 
 
 window.onload =function()
 {
     document.getElementById("startMenu").style.display = "block";
     document.getElementById("game").style.display = "none";
-    document.getElementById("highScore").innerHTML = "High Score: <br>" + highScore;
+    document.getElementById("highScore").innerHTML = "High Score: <br>" + highScores[level - 1];
     document.getElementById("startButton").onclick = startGame;
+    document.getElementById("radio1").onchange = setHighScore;
+    document.getElementById("radio2").onchange = setHighScore;
+
     
     canvas = document.getElementById("viewport");
     ctx =canvas.getContext("2d");
@@ -48,16 +51,16 @@ function startGame(){
     score = 0;
     timer = 60;
     
-// Level assignment
+    // Level assignment
     if (document.getElementById("radio1").checked) {
-        level = "1";
+        level = 1;
     }
     else {
-        level = "2";
+        level = 2;
     }
-
+    
     console.log("Level "+level);
-
+    
     drawInfoBar();
     foods = createGame();
     interval_game =  window.setInterval(reDraw, frameRate);
@@ -67,8 +70,19 @@ function startGame(){
 function showMenu(){
     document.getElementById("game").style.display = "none";
     document.getElementById("startMenu").style.display = "block";
-    console.log(highScore);
-    document.getElementById("highScore").innerHTML = "High Score: <br>" + highScore;
+    console.log(highScores[level - 1]);
+    setHighScore();
+}
+
+function setHighScore() {
+    if (document.getElementById("radio1").checked) {
+        level = 1;
+         }
+    else {
+        level = 2;
+    }
+
+    document.getElementById("highScore").innerHTML = "High Score: <br>" + highScores[level - 1];
 }
 
 
@@ -85,7 +99,6 @@ function checkPause(event)
 
 function pause()
 {
-    
     if(!game_pause)
     {
         game_pause = true;
@@ -172,7 +185,7 @@ function reDraw()
         window.clearInterval(interval_bugs);
         window.clearInterval(interval_game);
         showMenu();
-
+        
     }
     if(timer == 0)
     {
@@ -183,7 +196,7 @@ function reDraw()
         alert("You win!");
         timer = 0;
         showMenu();
-
+        
     }
 }
 
@@ -432,10 +445,10 @@ function killBug(event)
                 }
                 console.log(score);
                 
-                if(score > highScore){
-                    highScore = score;
-                    console.log(highScore);
-
+                if(score > highScores[level - 1]){
+                    highScores[level - 1] = score;
+                    console.log(highScores[level - 1]);
+                    
                 }
                 fadeList.push(bugs[i]);
                 bugs.splice(i, 1);
