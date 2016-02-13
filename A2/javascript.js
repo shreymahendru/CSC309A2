@@ -45,6 +45,7 @@ function startGame(){
     
     bugs = [];
     foods = [];
+    score = 0;
     timer = 60;
     
 // Level assignment
@@ -181,6 +182,8 @@ function reDraw()
         window.clearInterval(interval_bugs);
         alert("You win!");
         timer = 0;
+        showMenu();
+
     }
 }
 
