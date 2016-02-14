@@ -163,7 +163,7 @@ function reDraw()
                     fadeList[j]["alpha"] -= .5 / 20;
                     if(fadeList[j]["alpha"]> 0) {
                         fadeList[j].drawBug(ctx);
-                        console.log(fadeList[j]);
+                      //  console.log(fadeList[j]);
                     }
                 }
                 else
@@ -334,7 +334,7 @@ function findClosestFood(x1, y1)
 
 function createBug()
 {
-    console.log("hey");
+    console.log("new bug");
     var x=Math.floor( (Math.random() * (390-10)+10)); //x at random between 10 and 390
     // var y = 20;  //start at 20px
     //getting random colors
@@ -344,18 +344,35 @@ function createBug()
     if (probability < .3)
     {
         color = "black";
-        velocity = 150/60;
+        if (level == 1) {
+            velocity = 150 / 60;
+        }
+        else {
+            velocity = 200/60;
+        }
     }
     else if (probability >= .3 && probability <= .6)
     {
         color = "red";
-        velocity = 75/60;
+        if (level == 1) {
+            velocity = 75 / 60;
+        }
+        else {
+            velocity = 100/60;
+        }
     }
-    else if (probability > .6   )
+    else if (probability > .6)
     {
         color = "orange";
-        velocity = 60/60;
+        if (level == 1) {
+            velocity = 60 / 60;
+        }
+        else {
+            velocity = 80/60;
+        }
     }
+    console.log(level);
+    console.log(velocity);
     var bug = new Bug(x, 20, color, velocity, .7);
     bugs.push(bug);
     bug.drawBug();
