@@ -3,6 +3,16 @@ p
     font-size: 2em;
 }
 
+#title {
+    position: relative;
+    text-align: center;
+    padding: 9px;
+    border: 2px solid purple;
+    color: #F9D956;
+    background-color: skyblue;
+    font-family: "Comic Sans MS";
+}
+
 #viewport
 {
     padding: 0;
@@ -57,6 +67,7 @@ pointer-events: visible;
 
 #spacer {
     opacity: 0;
+    height: 9%;
 }
 
 
@@ -95,9 +106,9 @@ pointer-events: visible;
 
 
 body {
-    font-family: sans-serif;
+/*    font-family: sans-serif;*/
     margin: 10px;
-    color: #999;
+    color: purple;
     background-color: #eee;
 }
 
@@ -106,7 +117,7 @@ body {
 label {
     width: 40px;
     border-radius: 3px;
-    border: 1px solid #D1D3D4;
+    border: 1px solid purple;
 }
 
 input.radio:empty {
@@ -123,12 +134,12 @@ input.radio:empty ~ label {
 
 input.radio:checked ~ label {
     text-indent: .1em;
-    color: #9CE2AE;
+    color: yellow;
     background-color: purple;
 }
 
 input.radio:checked ~ label {
-    color: #777;
+    color: yellow;
 }
 
 .radioButton {
