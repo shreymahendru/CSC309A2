@@ -17,7 +17,7 @@ var overlapDist = 5;
 var interval_bugs;
 var fadeList = [];
 var score = 0;
-var highScores = [0,0];
+
 var timer = 60;
 var timeCntr =0;
 var level = 1;
@@ -27,7 +27,9 @@ window.onload =function()
 {
     document.getElementById("startMenu").style.display = "block";
     document.getElementById("game").style.display = "none";
-    document.getElementById("highScore").innerHTML = "High Score: <br>" + highScores[level - 1];
+    
+    var hs = [localStorage.getItem('hs1'), localStorage.getItem('hs2')];
+    document.getElementById("highScore").innerHTML = "High Score: <br>" + hs[level - 1];
     document.getElementById("startButton").onclick = startGame;
     document.getElementById("radio1").onchange = setHighScore;
     document.getElementById("radio2").onchange = setHighScore;
@@ -70,7 +72,6 @@ function startGame(){
 function showMenu(){
     document.getElementById("game").style.display = "none";
     document.getElementById("startMenu").style.display = "block";
-    console.log(highScores[level - 1]);
     setHighScore();
 }
 
@@ -81,8 +82,8 @@ function setHighScore() {
     else {
         level = 2;
     }
-
-    document.getElementById("highScore").innerHTML = "High Score: <br>" + highScores[level - 1];
+    var hs = [localStorage.getItem('hs1'), localStorage.getItem('hs2')];
+    document.getElementById("highScore").innerHTML = "High Score: <br>" + hs[level - 1];
 }
 
 
@@ -462,9 +463,14 @@ function killBug(event)
                 }
                 console.log(score);
                 
-                if(score > highScores[level - 1]){
-                    highScores[level - 1] = score;
-                    console.log(highScores[level - 1]);
+                
+                var hs = [localStorage.getItem('hs1'), localStorage.getItem('hs2')];
+                
+                if(score > hs[level - 1]){
+                    var key = "hs" + level;
+                    localStorage.setItem(key, score);
+                    
+                    console.log(key);
                     
                 }
                 fadeList.push(bugs[i]);
