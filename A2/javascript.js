@@ -16,8 +16,7 @@ var frameRate= 1000/60;
 var overlapDist = 5;
 var interval_bugs;
 var fadeList = [];
-var score = 0;
-
+var scores = [0, 0];
 var timer = 60;
 var timeCntr =0;
 var level = 1;
@@ -50,19 +49,9 @@ function startGame(){
     
     bugs = [];
     foods = [];
-    score = 0;
-    timer = 60;
-    
-    // Level assignment
-    if (document.getElementById("radio1").checked) {
-        level = 1;
-    }
-    else {
-        level = 2;
-    }
-    
-    console.log("Level "+level);
-    
+    scores[level-1] = 0;
+    timer = 10;
+
     drawInfoBar();
     foods = createGame();
     interval_game =  window.setInterval(reDraw, frameRate);
@@ -126,7 +115,7 @@ function drawInfoBar()    // to draw in the info bar canvas
     ctxInfoBar.font = "20px Comic Sans MS";
     ctxInfoBar.fillStyle = "#F9D956";
     ctxInfoBar.fillText("Time Left: "+ timer,6,30);
-    ctxInfoBar.fillText("Score: "+ score, 300, 30);
+    ctxInfoBar.fillText("Score: "+ scores[level-1], 300, 30);
     ctxInfoBar.fillStyle = "purple";
     ctxInfoBar.fillRect(187, 10, 60, 30);
     ctxInfoBar.fillStyle = "#F9D956";
@@ -194,9 +183,23 @@ function reDraw()
         drawInfoBar();
         window.clearInterval(interval_game);
         window.clearInterval(interval_bugs);
-        alert("You win!");
         timer = 0;
-        showMenu();
+        
+        if (level == 1){
+            level = 2;
+            startGame();
+            
+            
+        }else {
+            var alertText = "You win!" + "\n" + "Level 1 score: " + scores[0] + "\n" + "Level 2 score: " + scores[1] ;
+            alert(alertText);
+            showMenu();
+        }
+        
+        
+//        alert("You win!");
+//        timer = 0;
+//        showMenu();
         
     }
 }
@@ -451,24 +454,24 @@ function killBug(event)
             {
                 if(bugs[i].color == "black")
                 {
-                    score += 5;
+                    scores[level-1] += 5;
                 }
                 else if (bugs[i].color == "red")
                 {
-                    score += 3;
+                    scores[level-1] += 3;
                 }
                 else
                 {
-                    score += 1;
+                    scores[level-1] += 1;
                 }
-                console.log(score);
+                console.log(scores[level-1]);
                 
                 
                 var hs = [localStorage.getItem('hs1'), localStorage.getItem('hs2')];
                 
-                if(score > hs[level - 1]){
+                if(scores[level-1] > hs[level - 1]){
                     var key = "hs" + level;
-                    localStorage.setItem(key, score);
+                    localStorage.setItem(key, scores[level-1]);
                     
                     console.log(key);
                     
