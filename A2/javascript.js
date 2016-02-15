@@ -32,7 +32,7 @@ window.onload =function()
     document.getElementById("startButton").onclick = startGame;
     document.getElementById("radio1").onchange = setHighScore;
     document.getElementById("radio2").onchange = setHighScore;
-
+    
     
     canvas = document.getElementById("viewport");
     ctx =canvas.getContext("2d");
@@ -50,8 +50,8 @@ function startGame(){
     bugs = [];
     foods = [];
     scores[level-1] = 0;
-    timer = 10;
-
+    timer = 60;
+    
     drawInfoBar();
     foods = createGame();
     interval_game =  window.setInterval(reDraw, frameRate);
@@ -67,7 +67,7 @@ function showMenu(){
 function setHighScore() {
     if (document.getElementById("radio1").checked) {
         level = 1;
-         }
+    }
     else {
         level = 2;
     }
@@ -133,7 +133,6 @@ function drawInfoBar()    // to draw in the info bar canvas
 
 function reDraw()
 {
-    // console.log("doinf shit");
     timeCntr++;
     ctxInfoBar.clearRect(0, 0, infoBar.width, infoBar.height);  // clear info bar and redraw
     drawInfoBar();
@@ -153,7 +152,6 @@ function reDraw()
                     fadeList[j]["alpha"] -= .5 / 20;
                     if(fadeList[j]["alpha"]> 0) {
                         fadeList[j].drawBug(ctx);
-                      //  console.log(fadeList[j]);
                     }
                 }
                 else
@@ -164,7 +162,6 @@ function reDraw()
         }
         for (var i = 0; i < foods.length; i++) { //draw food
             foods[i].drawFood(ctx);
-            // console.log(foods[i].x);
         }
         moveBugs();
     }
@@ -187,20 +184,15 @@ function reDraw()
         
         if (level == 1){
             level = 2;
+            var alertText = "Level 2" + "\n" + "Level 1 score: " + scores[0];
+            alert(alertText);
             startGame();
-            
             
         }else {
             var alertText = "You win!" + "\n" + "Level 1 score: " + scores[0] + "\n" + "Level 2 score: " + scores[1] ;
             alert(alertText);
             showMenu();
         }
-        
-        
-//        alert("You win!");
-//        timer = 0;
-//        showMenu();
-        
     }
 }
 
@@ -208,7 +200,6 @@ function moveBugs()
 {
     if(bugs.length> 0) {
         for (var i = 0; i < bugs.length; i++) {
-            // console.log(bugs[i].y);
             if (foods.length > 0) {
                 var closesFood = findClosestFood(bugs[i].x, bugs[i].y);
                 var dx = closesFood[0]- bugs[i].x  ;
@@ -322,7 +313,6 @@ function findClosestFood(x1, y1)
         if(dist < overlapDist)
         {
             foods.splice(i, 1);
-            //console.log(foods.length);
             return findClosestFood(x1, x2);
         }
         
@@ -375,7 +365,6 @@ function createBug()
             velocity = 80/60;
         }
     }
-    console.log(level);
     console.log(velocity);
     var bug = new Bug(x, 20, color, velocity, .7);
     bugs.push(bug);
@@ -406,7 +395,6 @@ function createGame()
     for(var i = 0; i < 5; i++)
     {
         var crd = getFoodCoord();
-        // console.log(crd);
         var food1 = new Food(crd[0], crd[1], false);
         allFood.push(food1);
         ctx.globalAlpha =1;
@@ -464,7 +452,6 @@ function killBug(event)
                 {
                     scores[level-1] += 1;
                 }
-                console.log(scores[level-1]);
                 
                 
                 var hs = [localStorage.getItem('hs1'), localStorage.getItem('hs2')];
@@ -472,8 +459,6 @@ function killBug(event)
                 if(scores[level-1] > hs[level - 1]){
                     var key = "hs" + level;
                     localStorage.setItem(key, scores[level-1]);
-                    
-                    console.log(key);
                     
                 }
                 fadeList.push(bugs[i]);
